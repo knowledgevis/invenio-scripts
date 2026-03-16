@@ -4,6 +4,7 @@ import json
 # Global variable for the Invenio API server root
 INVENIO_SERVER_ROOT = "https://localhost:5000"
 good_records = ['6hb85-03457','nn041-vq357','67z73-phc25']
+good_records = []
 authorization_token = {'Authorization': 'Bearer PIErNEHI2tLp8yLl8R8QofSCEPgn0kCp7bPxXKXqFjMed2SvdQO7tniLtWoB'}
 
 
@@ -59,7 +60,7 @@ def delete_record(record_id):
     api_url = f"{INVENIO_SERVER_ROOT}/api/records/{record_id}"
     
     # Make the request
-    response = requests.delete(api_url,headers=authorization_token)
+    response = requests.delete(api_url,headers=authorization_token, verify=False)
     #response.raise_for_status()
     print(response.text)
 
