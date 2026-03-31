@@ -5,6 +5,8 @@ took the request ID and approved it, so the record became published.  Maybe if w
 community while the record was still in draft, it wouldn't have been so hard... 
 -->
 
+
+
 curl -k --request POST \
      --url 'https://127.0.0.1:5000/api/communities/cecf1612-5f83-4bb0-98c1-4c4fb963ef78/records' \
      --header 'Authorization: Bearer PIErNEHI2tLp8yLl8R8QofSCEPgn0kCp7bPxXKXqFjMed2SvdQO7tniLtWoB' \
@@ -26,8 +28,24 @@ curl -k -X POST "$BASE/api/records/$RECORD_ID/communities" \
     ]
   }'
 
+
+<!-- this above request assumes curator level over the community, but it didn't work all in one step, 
+we still had to approve the request.  Maybe it would be better to attempt a non-privileged request and then
+approve it, as the below curl does 
+--> 
+
+curl -i -X PUT "$BASE/api/records/$RECORD_ID/draft/review" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{
+    "receiver": {
+      "community": "'$COMMUNITY_ID'"
+    },
+    "type": "community-submission"
+  }'
+
 <!--
-this request returned a request ID, which has to be accepted by the curator/administrator.  
+Regardless, the request returned a request ID, which has to be accepted by the curator/administrator.  
 The response from the server was:
 -->
 
@@ -76,11 +94,13 @@ The response from the server was:
 
 
 <!-- 
-Which is a request record, so we need to collect the request ID and then accept the request. 
-Let us look at where in the record the request id can be found:
+Which is a request record. Notice the "request_id" field. We need to collect the request ID and then accept the request by sending an accept message.  Let us look at where in the record the request id can be found:
 
-["processed"][0]["request_id"] = "bb2b1be0-a81d-4dd2-b348-f9d33e881f47"
-["processed"][0]["receiver"]["community"] = "cecf1612-5f83-4bb0-98c1-4c4fb963ef78"
+["processed"][$INDEX]["request"][]"id"] = "bb2b1be0-a81d-4dd2-b348-f9d33e881f47"
+["processed"][$INDEX]["request"]["receiver"]["community"] = "cecf1612-5f83-4bb0-98c1-4c4fb963ef78"
+["processed'][$INDEX]["request"]{"topic"]["record"] = "s5mvp-eg647"
+
+So all the information we need to approve for each record is inside the ["request"] JSON subobject
 
 -->
 
